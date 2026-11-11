@@ -25,7 +25,14 @@ const userStore = useUserStore();
 
 const repeaterValue = computed({
 	get() {
-		return props.value?.fields?.map((field: Field) => field.meta);
+		// The sub-field identity (`field`, `name`, `type`) is stored at the top level of each entry, while `meta`
+		// holds the rest of the config. Merge both so the repeater rows always show the field key.
+		return props.value?.fields?.map((field: Record<string, any>) => ({
+			...field.meta,
+			field: field.field,
+			name: field.name,
+			type: field.type,
+		}));
 	},
 	set(newVal: FieldMeta[] | null) {
 		const fields = (newVal || []).map((meta: Record<string, any>) => ({
